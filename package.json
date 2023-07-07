@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/c0nstantin1990/track-employee/issues"
   },
-  "homepage": "https://github.com/c0nstantin1990/track-employee#readme"
+  "homepage": "https://github.com/c0nstantin1990/track-employee#readme",
+  "dependencies": {
+    "asciiart-logo": "^0.2.7",
+    "dotenv": "^16.3.1",
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.5.0"
+  }
 }
