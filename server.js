@@ -228,3 +228,80 @@ function addRole() {
       });
   });
 }
+// Adding employee
+function addAnEmployee() {
+  // Retrieving role options from the database
+  const roleQuery = "SELECT id, title FROM role";
+  connection.query(roleQuery, (err, roles) => {
+    if (err) throw err;
+
+    // Retrieving manager options from the database
+    const managerQuery = "SELECT id, CONCAT(first_name, ' ', last_name) AS manager FROM employee";
+    connection.query(managerQuery, (err, managers) => {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "firstName",
+            message: "Enter the employee's first name:",
+            validate: (input) => {
+              if (input.trim() === "") {
+                return "First name cannot be empty.";
+              }
+              return true;
+            },
+          },
+          {
+            type: "input",
+            name: "lastName",
+            message: "Enter the employee's last name:",
+            validate: (input) => {
+              if (input.trim() === "") {
+                return "Last name cannot be empty.";
+              }
+              return true;
+            },
+          },
+          {
+            type: "list",
+            name: "roleId",
+            message: "Select the role for the employee:",
+            choices: roles.map((role) => ({
+              name: role.title,
+              value: role.id,
+            })),
+          },
+          {
+            type: "list",
+            name: "managerId",
+            message: "Select the manager for the employee:",
+            choices: [
+              { name: "None", value: null },
+              ...managers.map((manager) => ({
+                name: manager.manager,
+                value: manager.id,
+              })),
+            ],
+          },
+        ])
+        .then((answers) => {
+          const { firstName, lastName, roleId, managerId } = answers;
+
+          const query =
+            "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+          connection.query(
+            query,
+            [firstName, lastName, roleId, managerId],
+            (err, res) => {
+              if (err) throw err;
+
+              console.log("\nEmployee added successfully!");
+              firstPrompt();
+            }
+          );
+        });
+    });
+  });
+}
