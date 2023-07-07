@@ -1,16 +1,6 @@
-const mysql = require("mysql2");
 const inquirer = require("inquirer");
-const dotenv = require("dotenv").config();
+const connection = require("./db/connection");
 const logo = require("asciiart-logo");
-
-// Creating a MySQL connection
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 33060,
-  user: "root",
-  password: process.env.DB_PASSWORD,
-  database: "employee_db",
-});
 
 // Connecting to the database and starting the application
 connection.connect((err) => {
