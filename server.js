@@ -1,14 +1,27 @@
 const inquirer = require("inquirer");
 const connection = require("./db/connection");
 const consTable = require("console.table");
-const logo = require("asciiart-logo");
+const figlet = require("figlet");
 
 // Connecting to the database and starting the application
+displayTrackEmployee();
 connection.connect((err) => {
   if (err) throw err;
   console.log("Connected to the database.");
   firstPrompt();
 });
+
+// Displaying the "Track Employee" ASCII
+function displayTrackEmployee() {
+  figlet("Track\nEmployee", (err, data) => {
+    if (err) {
+      console.log("Error displaying ASCII:", err);
+      return;
+    }
+    console.log(data);
+    console.log("\n");
+  });
+}
 
 // Displaying the initial user prompt
 function firstPrompt() {
