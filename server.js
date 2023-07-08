@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const connection = require("./db/connection");
+const consTable = require("console.table");
 const logo = require("asciiart-logo");
 
 // Connecting to the database and starting the application
@@ -66,46 +67,34 @@ function firstPrompt() {
 }
 // Viewing all departments
 function viewAllDepartments() {
-  const query = "SELECT id, name AS department_name FROM department";
+  const query = "SELECT id, name AS department FROM department";
   connection.query(query, (err, res) => {
     if (err) throw err;
-
-    console.log("\n-------------------------");
-    console.log("Departments");
-    console.log("-------------------------");
-
+    console.log("\n");
     if (res.length === 0) {
       console.log("No departments found.");
     } else {
       console.table(res);
     }
-
-    console.log("-------------------------\n");
     firstPrompt();
   });
 }
 // Viewing all roles
 function viewAllRoles() {
   const query = `
-    SELECT r.id AS role_id, r.title, r.salary, d.name AS department_name
+    SELECT r.id AS id, r.title, d.name AS department, r.salary 
     FROM role AS r
     INNER JOIN department AS d ON r.department_id = d.id
   `;
 
   connection.query(query, (err, res) => {
     if (err) throw err;
-
-    console.log("\n------------------------------------");
-    console.log("Roles");
-    console.log("------------------------------------");
-
+    console.log("\n");
     if (res.length === 0) {
       console.log("No roles found.");
     } else {
       console.table(res);
     }
-
-    console.log("------------------------------------\n");
     firstPrompt();
   });
 }
@@ -113,13 +102,13 @@ function viewAllRoles() {
 function viewAllEmployees() {
   const query = `
     SELECT
-      e.id AS employee_id,
+      e.id AS id,
       e.first_name,
       e.last_name,
-      r.title AS job_title,
+      r.title AS title,
       d.name AS department,
       r.salary,
-      CONCAT(m.first_name, ' ', m.last_name) AS manager
+      CONCAT(m.first_name, m.last_name) AS manager
     FROM employee AS e
     INNER JOIN role AS r ON e.role_id = r.id
     INNER JOIN department AS d ON r.department_id = d.id
@@ -127,22 +116,21 @@ function viewAllEmployees() {
   `;
 
   connection.query(query, (err, res) => {
-    if (err) throw err;
-
-    console.log("\n---------------------------------------------------------");
-    console.log("Employees");
-    console.log("---------------------------------------------------------");
-
+    if (err) {
+      console.error("Error retrieving employees:", err);
+      return;
+    }
+    console.log("\n");
     if (res.length === 0) {
       console.log("No employees found.");
     } else {
       console.table(res);
     }
 
-    console.log("---------------------------------------------------------\n");
     firstPrompt();
   });
 }
+
 // Adding department
 function addDepartment() {
   inquirer
