@@ -137,7 +137,7 @@ function addDepartment() {
     .prompt({
       type: "input",
       name: "departmentName",
-      message: "Enter the name of the department:",
+      message: "What is the name of the department?",
       validate: (input) => {
         if (input.trim() === "") {
           return "Department name cannot be empty.";
@@ -152,7 +152,7 @@ function addDepartment() {
       connection.query(query, [departmentName], (err, res) => {
         if (err) throw err;
 
-        console.log("\nDepartment added successfully!");
+        console.log("\nAdded to the database");
         firstPrompt();
       });
     });
@@ -169,7 +169,7 @@ function addRole() {
         {
           type: "input",
           name: "roleTitle",
-          message: "Enter the title of the role:",
+          message: "What is the name of the role?",
           validate: (input) => {
             if (input.trim() === "") {
               return "Role title cannot be empty.";
@@ -180,7 +180,7 @@ function addRole() {
         {
           type: "input",
           name: "roleSalary",
-          message: "Enter the salary for the role:",
+          message: "What is the salary of the role?",
           validate: (input) => {
             if (isNaN(input)) {
               return "Salary must be a valid number.";
@@ -191,7 +191,7 @@ function addRole() {
         {
           type: "list",
           name: "departmentId",
-          message: "Select the department for the role:",
+          message: "Which department does the role belong to?",
           choices: departments.map((department) => ({
             name: department.name,
             value: department.id,
@@ -209,7 +209,7 @@ function addRole() {
           (err, res) => {
             if (err) throw err;
 
-            console.log("\nRole added successfully!");
+            console.log("\nAdded to the database");
             firstPrompt();
           }
         );
@@ -234,7 +234,7 @@ function addAnEmployee() {
           {
             type: "input",
             name: "firstName",
-            message: "Enter the employee's first name:",
+            message: "What is the employee's first name?",
             validate: (input) => {
               if (input.trim() === "") {
                 return "First name cannot be empty.";
@@ -245,7 +245,7 @@ function addAnEmployee() {
           {
             type: "input",
             name: "lastName",
-            message: "Enter the employee's last name:",
+            message: "What is the employee's last name?",
             validate: (input) => {
               if (input.trim() === "") {
                 return "Last name cannot be empty.";
@@ -256,7 +256,7 @@ function addAnEmployee() {
           {
             type: "list",
             name: "roleId",
-            message: "Select the role for the employee:",
+            message: "What is the employee's role?",
             choices: roles.map((role) => ({
               name: role.title,
               value: role.id,
@@ -265,7 +265,7 @@ function addAnEmployee() {
           {
             type: "list",
             name: "managerId",
-            message: "Select the manager for the employee:",
+            message: "Who is the employee's manager?",
             choices: [
               { name: "None", value: null },
               ...managers.map((manager) => ({
@@ -286,7 +286,7 @@ function addAnEmployee() {
             (err, res) => {
               if (err) throw err;
 
-              console.log("\nEmployee added successfully!");
+              console.log("\nAdded to the database");
               firstPrompt();
             }
           );
@@ -315,7 +315,7 @@ function updateAnEmployeeRole() {
           {
             type: "list",
             name: "employeeId",
-            message: "Select the employee to update:",
+            message: "Which employee's role do you want to update?",
             choices: employees.map((employee) => ({
               name: employee.employee_name,
               value: employee.id,
@@ -324,7 +324,7 @@ function updateAnEmployeeRole() {
           {
             type: "list",
             name: "roleId",
-            message: "Select the new role for the employee:",
+            message: "Which role do you want to assign the selected employee?",
             choices: roles.map((role) => ({
               name: role.title,
               value: role.id,
@@ -338,7 +338,7 @@ function updateAnEmployeeRole() {
           connection.query(query, [roleId, employeeId], (err, res) => {
             if (err) throw err;
 
-            console.log("\nEmployee role updated successfully!");
+            console.log("\nUpdated employee's role");
             firstPrompt();
           });
         });
