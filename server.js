@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const connection = require("./db/connection");
-const consTable = require("console.table");
+require("console.table");
 const figlet = require("figlet");
 
 // Connecting to the database and starting the application
@@ -29,7 +29,7 @@ function firstPrompt() {
     .prompt({
       type: "list",
       name: "task",
-      message: "Make a selection:",
+      message: "What would you like to do?",
       choices: [
         "View All Departments",
         "View All Roles",
@@ -38,6 +38,7 @@ function firstPrompt() {
         "Add A Role",
         "Add An Employee",
         "Update An Employee Role",
+        "Update An Employee Manager",
         "Exit",
       ],
     })
@@ -69,6 +70,10 @@ function firstPrompt() {
 
         case "Update An Employee Role":
           updateAnEmployeeRole();
+          break;
+
+        case "Update An Employee Manager":
+          updateAnEmployeeManager();
           break;
 
         case "Exit":
@@ -356,5 +361,52 @@ function updateAnEmployeeRole() {
           });
         });
     });
+  });
+}
+// Updating employee manager
+function updateAnEmployeeManager() {
+  // Retrieving employee options from the database
+  const employeeQuery = `
+    SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS employee_name, CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+    FROM employee AS e
+    LEFT JOIN employee AS m ON e.manager_id = m.id
+  `;
+  connection.query(employeeQuery, (err, employees) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employeeId",
+          message: "Which employee's manager do you want to update?",
+          choices: employees.map((employee) => ({
+            name: `${employee.employee_name} (Manager: ${
+              employee.manager_name || "None"
+            })`,
+            value: employee.id,
+          })),
+        },
+        {
+          type: "list",
+          name: "managerId",
+          message: "Select the new manager for the employee:",
+          choices: employees.map((employee) => ({
+            name: employee.employee_name,
+            value: employee.id,
+          })),
+        },
+      ])
+      .then((answers) => {
+        const { employeeId, managerId } = answers;
+
+        const query = "UPDATE employee SET manager_id = ? WHERE id = ?";
+        connection.query(query, [managerId, employeeId], (err, res) => {
+          if (err) throw err;
+
+          console.log("\nUpdated employee's manager");
+          firstPrompt();
+        });
+      });
   });
 }
