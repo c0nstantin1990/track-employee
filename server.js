@@ -34,6 +34,7 @@ function firstPrompt() {
         "View All Departments",
         "View All Roles",
         "View All Employees",
+        "View Employees By Manager",
         "Add A Department",
         "Add A Role",
         "Add An Employee",
@@ -58,6 +59,10 @@ function firstPrompt() {
 
         case "Add A Department":
           addDepartment();
+          break;
+
+        case "View Employees By Manager":
+          viewEmployeesByManager();
           break;
 
         case "Add A Role":
@@ -146,6 +151,66 @@ function viewAllEmployees() {
     }
 
     firstPrompt();
+  });
+}
+
+// Viewing employees by manager
+function viewEmployeesByManager() {
+  // Retrieving manager options from the database
+  const managerQuery = `
+    SELECT DISTINCT CONCAT(m.first_name, ' ', m.last_name) AS manager_name, m.id AS manager_id
+    FROM employee AS e
+    LEFT JOIN employee AS m ON e.manager_id = m.id
+    WHERE m.id IS NOT NULL
+  `;
+  connection.query(managerQuery, (err, managers) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "managerId",
+          message: "Select a manager to view their employees:",
+          choices: managers.map((manager) => ({
+            name: manager.manager_name,
+            value: manager.manager_id,
+          })),
+        },
+      ])
+      .then((answers) => {
+        const { managerId } = answers;
+
+        const query = `
+          SELECT
+            e.id AS id,
+            e.first_name,
+            e.last_name,
+            r.title AS title,
+            d.name AS department,
+            r.salary,
+            CONCAT(m.first_name, ' ', m.last_name) AS manager
+          FROM employee AS e
+          INNER JOIN role AS r ON e.role_id = r.id
+          INNER JOIN department AS d ON r.department_id = d.id
+          LEFT JOIN employee AS m ON e.manager_id = m.id
+          WHERE e.manager_id = ?
+        `;
+        connection.query(query, [managerId], (err, res) => {
+          if (err) {
+            console.error("Error retrieving employees:", err);
+            return;
+          }
+          console.log("\n");
+          if (res.length === 0) {
+            console.log("No employees found for the selected manager.");
+          } else {
+            console.table(res);
+          }
+
+          firstPrompt();
+        });
+      });
   });
 }
 
