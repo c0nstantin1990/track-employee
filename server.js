@@ -35,6 +35,7 @@ function firstPrompt() {
         "View All Roles",
         "View All Employees",
         "View Employees By Manager",
+        "View Employees by Department",
         "Add A Department",
         "Add A Role",
         "Add An Employee",
@@ -63,6 +64,10 @@ function firstPrompt() {
 
         case "View Employees By Manager":
           viewEmployeesByManager();
+          break;
+
+        case "View Employees by Department":
+          viewEmployeesByDepartment();
           break;
 
         case "Add A Role":
@@ -204,6 +209,61 @@ function viewEmployeesByManager() {
           console.log("\n");
           if (res.length === 0) {
             console.log("No employees found for the selected manager.");
+          } else {
+            console.table(res);
+          }
+
+          firstPrompt();
+        });
+      });
+  });
+}
+
+// Viewing employees by department
+function viewEmployeesByDepartment() {
+  // Retrieving department options from the database
+  const departmentQuery = "SELECT id, name FROM department";
+  connection.query(departmentQuery, (err, departments) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "departmentId",
+          message: "Select a department to view its employees:",
+          choices: departments.map((department) => ({
+            name: department.name,
+            value: department.id,
+          })),
+        },
+      ])
+      .then((answers) => {
+        const { departmentId } = answers;
+
+        const query = `
+          SELECT
+            e.id AS id,
+            e.first_name,
+            e.last_name,
+            r.title AS title,
+            d.name AS department,
+            r.salary,
+            CONCAT(m.first_name, ' ', m.last_name) AS manager
+          FROM employee AS e
+          INNER JOIN role AS r ON e.role_id = r.id
+          INNER JOIN department AS d ON r.department_id = d.id
+          LEFT JOIN employee AS m ON e.manager_id = m.id
+          WHERE d.id = ?
+        `;
+        connection.query(query, [departmentId], (err, res) => {
+          if (err) {
+            console.error("Error retrieving employees:", err);
+            return;
+          }
+          console.log("\n");
+          if (res.length === 0) {
+            console.log("No employees found for the selected department.");
           } else {
             console.table(res);
           }
