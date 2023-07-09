@@ -7,13 +7,13 @@ const figlet = require("figlet");
 displayTrackEmployee();
 connection.connect((err) => {
   if (err) throw err;
-  console.log("Connected to the database.");
   firstPrompt();
 });
 
 // Displaying the "Track Employee" ASCII
 function displayTrackEmployee() {
-  figlet("Track\nEmployee", (err, data) => {
+  const font = "Slant";
+  figlet.text("Track\nEmployee", { font }, (err, data) => {
     if (err) {
       console.log("Error displaying ASCII:", err);
       return;
