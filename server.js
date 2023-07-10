@@ -41,6 +41,9 @@ function firstPrompt() {
         "Add An Employee",
         "Update An Employee Role",
         "Update An Employee Manager",
+        "Delete A Department",
+        "Delete A Role",
+        "Delete An Employee",
         "Exit",
       ],
     })
@@ -84,6 +87,18 @@ function firstPrompt() {
 
         case "Update An Employee Manager":
           updateAnEmployeeManager();
+          break;
+
+        case "Delete A Department":
+          deleteDepartment();
+          break;
+
+        case "Delete A Role":
+          deleteRole();
+          break;
+
+        case "Delete An Employee":
+          deleteEmployee();
           break;
 
         case "Exit":
@@ -530,6 +545,107 @@ function updateAnEmployeeManager() {
           if (err) throw err;
 
           console.log("\nUpdated employee's manager");
+          firstPrompt();
+        });
+      });
+  });
+}
+// Deleting a department
+function deleteDepartment() {
+  // Retrieving department options from the database
+  const departmentQuery = "SELECT id, name FROM department";
+  connection.query(departmentQuery, (err, departments) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "departmentId",
+          message: "Select a department to delete:",
+          choices: departments.map((department) => ({
+            name: department.name,
+            value: department.id,
+          })),
+        },
+      ])
+      .then((answers) => {
+        const { departmentId } = answers;
+
+        const query = "DELETE FROM department WHERE id = ?";
+        connection.query(query, [departmentId], (err, res) => {
+          if (err) throw err;
+
+          console.log("\nDeleted department from the database");
+          firstPrompt();
+        });
+      });
+  });
+}
+
+// Deleting a role
+function deleteRole() {
+  // Retrieving role options from the database
+  const roleQuery = "SELECT id, title FROM role";
+  connection.query(roleQuery, (err, roles) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "roleId",
+          message: "Select a role to delete:",
+          choices: roles.map((role) => ({
+            name: role.title,
+            value: role.id,
+          })),
+        },
+      ])
+      .then((answers) => {
+        const { roleId } = answers;
+
+        const query = "DELETE FROM role WHERE id = ?";
+        connection.query(query, [roleId], (err, res) => {
+          if (err) throw err;
+
+          console.log("\nDeleted role from the database");
+          firstPrompt();
+        });
+      });
+  });
+}
+
+// Deleting an employee
+function deleteEmployee() {
+  // Retrieving employee options from the database
+  const employeeQuery = `
+    SELECT e.id, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
+    FROM employee AS e
+  `;
+  connection.query(employeeQuery, (err, employees) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employeeId",
+          message: "Select an employee to delete:",
+          choices: employees.map((employee) => ({
+            name: employee.employee_name,
+            value: employee.id,
+          })),
+        },
+      ])
+      .then((answers) => {
+        const { employeeId } = answers;
+
+        const query = "DELETE FROM employee WHERE id = ?";
+        connection.query(query, [employeeId], (err, res) => {
+          if (err) throw err;
+
+          console.log("\nDeleted employee from the database");
           firstPrompt();
         });
       });

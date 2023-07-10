@@ -2,7 +2,7 @@
 
 ## Description
 
-The Track Employee is a Node.js application that provides a user-friendly command-line interface for managing and tracking employees within an organization. It allows users to perform a variety of operations related to employee management, such as viewing departments, roles, and employees, adding new departments, roles, and employees, updating employee roles and managers, and exiting the application.
+The Track Employee is a Node.js application that provides a user-friendly command-line interface for managing and tracking employees within an organization. It allows users to perform a variety of operations related to employee management, such as viewing departments, roles, and employees, adding new departments, roles, and employees, updating employee roles and managers, deleting departments, deleting roles, deleting employees and exiting the application.
 
 ## Table of Contents
 
@@ -37,3 +37,6 @@ GitHub Repo: https://github.com/c0nstantin1990/track-employee
 - Adding An Employee
 - Updating An Employee Role
 - Updating An Employee Manager
+- Delete A Department
+- Delete A Role
+- Delete An Employee
