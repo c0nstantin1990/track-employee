@@ -35,7 +35,8 @@ function firstPrompt() {
         "View All Roles",
         "View All Employees",
         "View Employees By Manager",
-        "View Employees by Department",
+        "View Employees By Department",
+        "View Combined Salaries In Department",
         "Add A Department",
         "Add A Role",
         "Add An Employee",
@@ -71,6 +72,10 @@ function firstPrompt() {
 
         case "View Employees by Department":
           viewEmployeesByDepartment();
+          break;
+
+        case "View Combined Salaries In Department":
+          viewTotalDepartmentBudget();
           break;
 
         case "Add A Role":
@@ -279,6 +284,51 @@ function viewEmployeesByDepartment() {
           console.log("\n");
           if (res.length === 0) {
             console.log("No employees found for the selected department.");
+          } else {
+            console.table(res);
+          }
+
+          firstPrompt();
+        });
+      });
+  });
+}
+// Viewing total department budget
+function viewTotalDepartmentBudget() {
+  // Retrieving department options from the database
+  const departmentQuery = "SELECT id, name FROM department";
+  connection.query(departmentQuery, (err, departments) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "departmentId",
+          message: "Select a department to view the total utilized budget:",
+          choices: departments.map((department) => ({
+            name: department.name,
+            value: department.id,
+          })),
+        },
+      ])
+      .then((answers) => {
+        const { departmentId } = answers;
+
+        const query = `
+          SELECT d.name AS department, SUM(r.salary) AS total_budget
+          FROM employee AS e
+          INNER JOIN role AS r ON e.role_id = r.id
+          INNER JOIN department AS d ON r.department_id = d.id
+          WHERE d.id = ?
+          GROUP BY d.id, d.name
+        `;
+        connection.query(query, [departmentId], (err, res) => {
+          if (err) throw err;
+
+          console.log("\n");
+          if (res.length === 0) {
+            console.log("No department found with the selected ID.");
           } else {
             console.table(res);
           }
