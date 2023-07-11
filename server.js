@@ -70,7 +70,7 @@ function firstPrompt() {
           viewEmployeesByManager();
           break;
 
-        case "View Employees by Department":
+        case "View Employees By Department":
           viewEmployeesByDepartment();
           break;
 
