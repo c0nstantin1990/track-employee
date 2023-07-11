@@ -29,6 +29,8 @@ GitHub Repo: https://github.com/c0nstantin1990/track-employee
 
 ## Video_Demo
 
+Walkthrough Video: https://drive.google.com/file/d/1FXAnA9We5Gf9qNveLsd35DPHjbzC9rnW/view
+
 ## Features
 
 - Viewing All Departments
